@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val IMAGE_REQUEST_CODE = 0
+        const val IMAGE_NAME = "IMAGE_NAME"
     }
 
     var imgList: ArrayList<ImageData> = ArrayList()
@@ -25,8 +26,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        imgList = ArrayList()
 
         button_get_image.setOnClickListener {
             val intent = Intent(ACTION_GET_CONTENT)
@@ -43,6 +42,7 @@ class MainActivity : AppCompatActivity() {
             val imageURI = data?.data
             if (imageURI != null) {
                 imgList.add(ImageData(imageURI.toString()))
+                populateImgData()
             }
         }
 
@@ -50,19 +50,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Creates text view to populate the scroll view with image text
-    private fun createTextView(imgName: ImageData): TextView {
+    private fun createTextView(imgName: ImageData, index: Int): TextView {
         val view = TextView(this)
 
+        view.id = index
         view.text = "${imgName}"
         view.textSize = 24f
+        view.setOnClickListener {
+            val intent = Intent(this, DetailsActivity::class.java)
+
+            intent.putExtra(IMAGE_NAME, imgName)
+
+            startActivity(intent)
+        }
 
         return view
     }
 
     // populateImgData function populates the list of images by adding their names and index from imgList
     fun populateImgData() {
-        for(i in 0..imgList.size) {
-            linear_scroll.addView(createTextView(imgList[i]))
+        for(i in 0 until imgList.size) {
+            linear_scroll.addView(createTextView(imgList[i], i))
+
         }
     }
 }
